@@ -1,0 +1,21 @@
+{{- if and .Values.externaldns.enable .Values.externaldns.useExternalSecret }}
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: cloudflare-api-token
+  namespace: {{ .Values.externaldns.destination.namespace | default "external-dns" }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: {{ .Values.externaldns.secretStore.name | default "doppler" }}
+    kind: {{ .Values.externaldns.secretStore.kind | default "ClusterSecretStore" }}
+  target:
+    name: cloudflare-api-token
+    creationPolicy: Owner
+  data:
+    - secretKey: api-token
+      remoteRef:
+        key: {{ .Values.externaldns.remoteKey | default "CF_TOKEN" }}
+{{- end }}

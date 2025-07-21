@@ -1,19 +1,38 @@
-{{- if .Values.domain }}
+{{- if and .Values.certmanager.enable .Values.domain }}
+---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-issuer
+  name: letsencrypt-production
 spec:
   acme:
-    email: hivenetes@gmail.com
+    email: {{ .Values.certmanager.email }}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: letsencrypt-issuer-account-key
+      name: letsencrypt-production-account-key
     solvers:
-      - selector: {}
-        dns01:
-          digitalocean:
-            tokenSecretRef:
-              name: lets-encrypt-do-dns
-              key: access-token
+      - dns01:
+          cloudflare:
+            email: {{ .Values.cloudflare.email }}
+            apiTokenSecretRef:
+              name: letsencrypt-cloudflare-token
+              key: api-token
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    email: {{ .Values.certmanager.email }}
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-staging-account-key
+    solvers:
+      - dns01:
+          cloudflare:
+            email: {{ .Values.cloudflare.email }}
+            apiTokenSecretRef:
+              name: letsencrypt-cloudflare-token
+              key: api-token
 {{- end }}

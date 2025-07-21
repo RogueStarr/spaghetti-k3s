@@ -7,7 +7,7 @@
 - Alert enrichment and automatic remediation through a powerful [automation engine](https://home.robusta.dev/features/automation-engine)
 - [Multi-cluster observability](https://home.robusta.dev/features/multi-cluster-observability)
 
-![pic-courtesy:robusta.dev](https://github.com/hivenetes/k8s-bootstrapper/blob/main/docs/assets/robusta.gif?raw=true "robusta-dev")
+![pic-courtesy:robusta.dev](https://github.com/RogueStarr/spaghetti-k3s/blob/main/docs/assets/robusta.gif?raw=true "robusta-dev")
 
 ## Installation
 

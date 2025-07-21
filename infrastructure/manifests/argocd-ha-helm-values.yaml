@@ -3,16 +3,29 @@ redis-ha:
 
 controller:
   replicas: 1
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  tolerations: []
 
 server:
   autoscaling:
     enabled: true
     minReplicas: 2
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  tolerations: []
 
 repoServer:
   autoscaling:
     enabled: true
     minReplicas: 2
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  tolerations: []
 
 applicationSet:
   replicaCount: 2
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  tolerations: []
+

@@ -1,3 +1,21 @@
 bots:
   enable: false
-domain: 
+domain: roguestarr.com 
+externaldns:
+  enable: true
+  useExternalSecret: true
+  destination:
+    namespace: external-dns
+  secretStore:
+    name: doppler
+    kind: ClusterSecretStore
+  remoteKey: CF_TOKEN
+certmanager:
+  enable: true
+  email: rogue@roguestarr.com
+  secretStore:
+    name: doppler
+    kind: ClusterSecretStore
+  remoteKey: CF_TOKEN
+cloudflare:
+  email: rogue@roguestarr.com

@@ -1,6 +1,6 @@
 # Global
 domain: 
-storageClass: "do-block-storage"
+storageClass: "longhorn"
 # Application specific
 bots:
   enable: false
@@ -16,6 +16,42 @@ observability:
   storageSize: 50Gi
   retention: 5d
 traefik:
-  enable: true  
+  enable: false  
 trivy:
-  enable: true
+  enable: false
+#external-secrets-operator:
+externalsecrets:
+  enable: false
+  name: external-secrets
+  releaseName: external-secrets
+  repoURL: https://charts.external-secrets.io
+  version: 0.18.2
+  valueFiles:
+    - values.yaml
+  parameters: []
+  destination:
+    namespace: external-secrets
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+#external-dns
+externaldns:
+  enable: false
+  name: external-dns
+  releaseName: external-dns
+  repoURL: https://kubernetes-sigs.github.io/external-dns/
+  version: 1.14.4
+  valueFiles:
+    - values.yaml
+  parameters: []
+  destination:
+    namespace: external-dns
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+
+
+

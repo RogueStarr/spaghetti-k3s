@@ -1,0 +1,29 @@
+{{- if .Values.externaldns.enable }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.externaldns.name | default "external-dns" }}
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.externaldns.project | default "default" }}
+  source:
+    repoURL: {{ .Values.externaldns.repoURL | default "https://kubernetes-sigs.github.io/external-dns/" | quote }}
+    chart: external-dns
+    targetRevision: {{ .Values.externaldns.version | default "1.14.4" | quote }}
+    helm:
+      valueFiles:
+        {{- range .Values.externaldns.valueFiles }}
+        - {{ . | quote }}
+        {{- end }}
+  destination:
+    server: {{ .Values.externaldns.destination.server | default "https://kubernetes.default.svc" | quote }}
+    namespace: {{ .Values.externaldns.destination.namespace | default "external-dns" | quote }}
+  syncPolicy:
+    automated: {{ .Values.externaldns.syncPolicy.automated | default dict | toYaml | nindent 6 }}
+    syncOptions:
+      {{- range .Values.externaldns.syncPolicy.syncOptions }}
+      - {{ . }}
+      {{- end }}
+{{- end }}

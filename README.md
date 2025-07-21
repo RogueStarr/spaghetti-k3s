@@ -12,7 +12,7 @@ With [many cloud-native solutions](https://landscape.cncf.io/) popping up daily,
 
 ## Kubernetes Bootstrapper
 
-The [**k8s-bootstrapper**](https://github.com/hivenetes/k8s-bootstrapper) project is a customizable and extendable framework that aims to solve this problem by leveraging
+The [**k8s-bootstrapper**](https://github.com/RogueStarr/spaghetti-k3s) project is a customizable and extendable framework that aims to solve this problem by leveraging
 
 - [Terraform](https://www.terraform.io/): Compose a production-ready infrastructure on DigitalOcean
 - [Argo CD](https://argo-cd.readthedocs.io/en/stable/): Application configuration management and delivery using GitOps
@@ -81,7 +81,7 @@ terraform destroy --var-file=bootstrapper.tfvars --auto-approve
 *k8s-bootstrapper* in action
 
 - [Running Mastodon on Kubernetes](https://github.com/digitalocean/mastodon-on-kubernetes)
-- [DOKS Application Log Monitoring and Retention using Grafana Loki and DigitalOcean Spaces](https://github.com/hivenetes/k8s-bootstrapper/tree/loki-spaces-demo/demo/loki-spaces)
+- [DOKS Application Log Monitoring and Retention using Grafana Loki and DigitalOcean Spaces](https://github.com/RogueStarr/spaghetti-k3s/tree/loki-spaces-demo/demo/loki-spaces)
 
 - [tiffanyfay/lets-generate-art](https://github.com/tiffanyfay/lets-generate-art)
 
