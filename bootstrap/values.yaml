@@ -1,5 +1,5 @@
 # Global
-domain: 
+domain: roguestarr.com
 storageClass: "longhorn"
 # Application specific
 bots:
@@ -18,7 +18,7 @@ observability:
 traefik:
   enable: false  
 trivy:
-  enable: false
+  enable: true
 #external-secrets-operator:
 externalsecrets:
   enable: false

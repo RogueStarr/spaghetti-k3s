@@ -29,3 +29,6 @@ applicationSet:
     node-role.kubernetes.io/worker: ""
   tolerations: []
 
+configs:
+  params:
+    server.insecure: true

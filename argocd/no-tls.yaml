@@ -1,9 +1,11 @@
-# kubectl patch deployment -n argocd argocd-server --patch-file argocd/no-tls.yaml
 spec:
   template:
     spec:
       containers:
       - name: argocd-server
-        command: 
-          - argocd-server
+        args:
           - --insecure
+        # This tells Kubernetes to merge into the container instead of replacing it
+        # But to do this correctly, we must use a strategic merge patch
+        # and include the `$patch` directive in the right location
+        # However, kubectl doesn't handle strategic merge patches via --patch-file by default
