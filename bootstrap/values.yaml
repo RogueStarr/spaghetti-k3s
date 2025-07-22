@@ -52,6 +52,9 @@ externaldns:
     automated: {}
     syncOptions:
       - CreateNamespace=true
+#storage
+storage:
+  enable: true
 
 
 
