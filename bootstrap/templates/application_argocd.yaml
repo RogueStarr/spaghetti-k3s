@@ -11,12 +11,41 @@ spec:
     targetRevision: 8.1.4  # adjust to preferred version
     helm:
       values: |
+        redis-ha:
+          enabled: true
+
+        controller:
+          replicas: 1
+          nodeSelector:
+            node-role.kubernetes.io/worker: ""
+          tolerations: []
+
         server:
-          service:
-            type: ClusterIP
+          autoscaling:
+            enabled: true
+            minReplicas: 2
+          nodeSelector:
+            node-role.kubernetes.io/worker: ""
+          tolerations: []
+
+        repoServer:
+          autoscaling:
+            enabled: true
+            minReplicas: 2
+          nodeSelector:
+            node-role.kubernetes.io/worker: ""
+          tolerations: []
+
+        applicationSet:
+          replicaCount: 2
+          nodeSelector:
+            node-role.kubernetes.io/worker: ""
+          tolerations: []
+
         configs:
           params:
             server.insecure: true
+
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
