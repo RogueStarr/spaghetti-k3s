@@ -1,0 +1,7 @@
+apiVersion: v2
+name: whoami
+version: 0.1.0
+dependencies:
+  - name: whoami
+    version: 0.2.7
+    repository: https://cowdogmoo.github.io/helm-charts/

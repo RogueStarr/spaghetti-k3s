@@ -1,0 +1,7 @@
+apiVersion: v2
+name: nginx-dev
+version: 0.1.0
+dependencies:
+  - name: nginx
+    version: 17.x.x     # Use the exact version you want
+    repository: https://charts.bitnami.com/bitnami
