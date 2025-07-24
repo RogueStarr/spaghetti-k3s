@@ -1,16 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: argocd
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://argoproj.github.io/argo-helm
-    chart: argo-cd
-    targetRevision: 8.2.0  # Use your actual working version here
-    helm:
-      values: |
+values: |
         redis-ha:
           enabled: true
 
@@ -68,11 +56,3 @@ spec:
         configs:
           params:
             server.insecure: true
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
-  syncPolicy:
-    automated:
-      selfHeal: true
-      prune: true
