@@ -39,9 +39,13 @@ spec:
             - name: argocd-cmp-cm
               configMap:
                 name: argocd-cmp-cm
+                items:
+                  - key: argocd-lovely-plugin.yaml
+                    path: plugin.yaml  # Mount as plugin.yaml in /home/argocd/cmp-server/config
           extraContainers:
             - name: argocd-lovely-plugin-cmp
               image: ghcr.io/crumbhole/argocd-lovely-plugin-cmp:1.2.2
+              command: ["/var/run/argocd/argocd-cmp-server"]  # Explicit entrypoint
               securityContext:
                 runAsNonRoot: true
                 runAsUser: 999
@@ -53,16 +57,17 @@ spec:
                 - mountPath: /tmp
                   name: tmp
                 - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                  subPath: argocd-lovely-plugin.yaml
                   name: argocd-cmp-cm
+                  subPath: plugin.yaml  # Use the items.path as the subPath
               env:
                 - name: LOVELY_HELM_TIMEOUT
                   value: "20m"
                 - name: LOVELY_KUSTOMIZE_BUILD_OPTIONS
                   value: ""
-                - name: LOVELY_HELMFILE_TIMEOUT  
+                - name: LOVELY_HELMFILE_TIMEOUT
                   value: "20m"
-
+                - name: ARGOCD_EXEC_TIMEOUT
+                  value: "1200s"
         applicationSet:
           replicaCount: 2
           nodeSelector:
@@ -79,23 +84,21 @@ spec:
                 apiVersion: argoproj.io/v1alpha1
                 kind: ConfigManagementPlugin
                 metadata:
-                  name: argocd-lovely-plugin-v1.0
+                  name: argocd-lovely-plugin-v1.2
                 spec:
-                  version: v1.0
+                  version: v1.2
                   generate:
                     command: ["/usr/local/bin/argocd-lovely-plugin"]
                   discover:
                     find:
                       command: ["/bin/bash", "-c"]
-                      args: 
+                      args:
                         - |
                           if [[ -f "Chart.yaml" ]] || [[ -f "kustomization.yaml" ]] || [[ -f "helmfile.yaml" ]] || find . -name "*.yaml" -o -name "*.yml" | head -1 | grep -q .; then
                             exit 0
                           else
                             exit 1
                           fi
-    plugin:
-      name: argocd-lovely-plugin-v1.0  # Added to explicitly reference the plugin
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

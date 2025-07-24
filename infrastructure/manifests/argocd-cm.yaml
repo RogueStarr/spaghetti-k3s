@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  server.repo.server.timeout.seconds: "1200"
+  controller.repo.server.timeout.seconds: "1200"

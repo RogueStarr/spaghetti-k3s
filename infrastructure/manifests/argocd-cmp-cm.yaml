@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmp-cm
+  namespace: argocd
+data:
+  argocd-lovely-plugin.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: argocd-lovely-plugin-v1.2
+    spec:
+      version: v1.2
+      generate:
+        command: ["/usr/local/bin/argocd-lovely-plugin"]
+      discover:
+        find:
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              if [[ -f "Chart.yaml" ]] || [[ -f "kustomization.yaml" ]] || [[ -f "helmfile.yaml" ]] || find . -name "*.yaml" -o -name "*.yml" | head -1 | grep -q .; then
+                exit 0
+              else
+                exit 1
+              fi
