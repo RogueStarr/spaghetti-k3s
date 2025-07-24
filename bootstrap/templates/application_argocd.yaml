@@ -27,7 +27,12 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
-          # Remove the extraContainers from server - plugins go in repoServer!
+          extraContainers: []
+          volumes: []
+          volumeMounts: []
+          # Explicitly disable custom styles to avoid argocd-styles-cm
+          extraConfig:
+            styles: null
 
         repoServer:
           autoscaling:
@@ -36,13 +41,10 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
-          
-          # Add the lovely plugin as a sidecar container (correct approach)
           volumes:
             - name: argocd-cmp-cm
               configMap:
                 name: argocd-cmp-cm
-          
           extraContainers:
             - name: argocd-lovely-plugin-cmp
               image: ghcr.io/crumbhole/argocd-lovely-plugin-cmp:v0.22.3
@@ -76,8 +78,6 @@ spec:
         configs:
           params:
             server.insecure: true
-          
-          # Configure the CMP plugin
           cmp:
             create: true
             plugins:
