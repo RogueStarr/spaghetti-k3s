@@ -27,18 +27,7 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
-          extraContainers:
-            - name: lovely-plugin
-              image: alpine:3.19
-              command: ["/bin/sh", "-c"]
-              args:
-                - |
-                  apk add --no-cache curl bash git;
-                  curl -fsSL https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh | bash -s /custom-tools;
-                  sleep infinity
-              volumeMounts:
-                - name: custom-tools
-                  mountPath: /custom-tools
+          # Remove the extraContainers from server - plugins go in repoServer!
 
         repoServer:
           autoscaling:
@@ -47,26 +36,36 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
+          
+          # Add the lovely plugin as a sidecar container (correct approach)
           volumes:
-            - name: custom-tools
-              emptyDir: {}
-          volumeMounts:
-            - name: custom-tools
-              mountPath: /custom-tools
-          initContainers:
-            - name: install-argocd-lovely-plugin
-              image: alpine:3.19
-              command: ["/bin/sh", "-c"]
-              args:
-                - |
-                  apk add --no-cache curl bash git;
-                  curl -fsSL https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh | bash -s /custom-tools
+            - name: argocd-cmp-cm
+              configMap:
+                name: argocd-cmp-cm
+          
+          extraContainers:
+            - name: argocd-lovely-plugin-cmp
+              image: ghcr.io/crumbhole/argocd-lovely-plugin-cmp:v0.22.3
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 999
               volumeMounts:
-                - name: custom-tools
-                  mountPath: /custom-tools
-          env:
-            - name: HELM_PLUGINS
-              value: /custom-tools
+                - mountPath: /var/run/argocd
+                  name: var-files
+                - mountPath: /home/argocd/cmp-server/plugins
+                  name: plugins
+                - mountPath: /tmp
+                  name: tmp
+                - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                  subPath: argocd-lovely-plugin.yaml
+                  name: argocd-cmp-cm
+              env:
+                - name: LOVELY_HELM_TIMEOUT
+                  value: "20m"
+                - name: LOVELY_KUSTOMIZE_BUILD_OPTIONS
+                  value: ""
+                - name: LOVELY_HELMFILE_TIMEOUT  
+                  value: "20m"
 
         applicationSet:
           replicaCount: 2
@@ -77,6 +76,30 @@ spec:
         configs:
           params:
             server.insecure: true
+          
+          # Configure the CMP plugin
+          cmp:
+            create: true
+            plugins:
+              argocd-lovely-plugin.yaml: |
+                apiVersion: argoproj.io/v1alpha1
+                kind: ConfigManagementPlugin
+                metadata:
+                  name: argocd-lovely-plugin-v1.0
+                spec:
+                  version: v1.0
+                  generate:
+                    command: ["/usr/local/bin/argocd-lovely-plugin"]
+                  discover:
+                    find:
+                      command: ["/bin/bash", "-c"]
+                      args: 
+                        - |
+                          if [[ -f "Chart.yaml" ]] || [[ -f "kustomization.yaml" ]] || [[ -f "helmfile.yaml" ]] || find . -name "*.yaml" -o -name "*.yml" | head -1 | grep -q .; then
+                            exit 0
+                          else
+                            exit 1
+                          fi
 
   destination:
     server: https://kubernetes.default.svc
