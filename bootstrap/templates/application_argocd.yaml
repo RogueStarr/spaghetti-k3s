@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: 8.1.4  # adjust to preferred version
+    targetRevision: 8.1.14  # Use your actual working version here
     helm:
       values: |
         redis-ha:
@@ -27,8 +27,8 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
-          extensions:
-            - name: argocd-lovely-plugin
+          plugins:
+            argocd-lovely-plugin:
               url: https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh
 
         repoServer:
