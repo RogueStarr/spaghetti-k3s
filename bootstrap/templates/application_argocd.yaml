@@ -42,8 +42,8 @@ spec:
             - name: custom-tools
               emptyDir: {}
           volumeMounts:
-            - mountPath: /custom-tools
-              name: custom-tools
+            - name: custom-tools
+              mountPath: /custom-tools
           initContainers:
             - name: install-argocd-lovely-plugin
               image: alpine:3.19
@@ -53,8 +53,8 @@ spec:
                   apk add --no-cache curl bash git;
                   curl -fsSL https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh | bash -s /custom-tools
               volumeMounts:
-                - mountPath: /custom-tools
-                  name: custom-tools
+                - name: custom-tools
+                  mountPath: /custom-tools
           env:
             - name: HELM_PLUGINS
               value: /custom-tools
