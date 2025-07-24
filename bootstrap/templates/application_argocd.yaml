@@ -41,11 +41,11 @@ spec:
                 name: argocd-cmp-cm
                 items:
                   - key: argocd-lovely-plugin.yaml
-                    path: plugin.yaml  # Mount as plugin.yaml in /home/argocd/cmp-server/config
+                    path: plugin.yaml
           extraContainers:
             - name: argocd-lovely-plugin-cmp
               image: ghcr.io/crumbhole/argocd-lovely-plugin-cmp:1.2.2
-              command: ["/var/run/argocd/argocd-cmp-server"]  # Explicit entrypoint
+              command: ["/var/run/argocd/argocd-cmp-server"]
               securityContext:
                 runAsNonRoot: true
                 runAsUser: 999
@@ -58,7 +58,7 @@ spec:
                   name: tmp
                 - mountPath: /home/argocd/cmp-server/config/plugin.yaml
                   name: argocd-cmp-cm
-                  subPath: plugin.yaml  # Use the items.path as the subPath
+                  subPath: plugin.yaml
               env:
                 - name: LOVELY_HELM_TIMEOUT
                   value: "20m"
@@ -75,8 +75,11 @@ spec:
           tolerations: []
 
         configs:
-          params:
-            server.insecure: true
+          cm:
+            create: true
+            data:
+              server.repo.server.timeout.seconds: "1200"
+              controller.repo.server.timeout.seconds: "1200"
           cmp:
             create: true
             plugins:
