@@ -27,6 +27,9 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
+          extensions:
+            - name: argocd-lovely-plugin
+              url: https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh
 
         repoServer:
           autoscaling:
@@ -35,6 +38,26 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
+          volumes:
+            - name: custom-tools
+              emptyDir: {}
+          volumeMounts:
+            - mountPath: /custom-tools
+              name: custom-tools
+          initContainers:
+            - name: install-argocd-lovely-plugin
+              image: alpine:3.19
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  apk add --no-cache curl bash git;
+                  curl -fsSL https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh | bash -s /custom-tools
+              volumeMounts:
+                - mountPath: /custom-tools
+                  name: custom-tools
+          env:
+            - name: HELM_PLUGINS
+              value: /custom-tools
 
         applicationSet:
           replicaCount: 2
