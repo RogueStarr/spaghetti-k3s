@@ -27,11 +27,7 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
-          extraContainers: []
-          volumes: []
-          volumeMounts: []
-          extraConfig:
-            styles: null
+          # Remove the extraContainers from server - plugins go in repoServer!
 
         repoServer:
           autoscaling:
@@ -40,13 +36,16 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
+          
+          # Add the lovely plugin as a sidecar container (correct approach)
           volumes:
             - name: argocd-cmp-cm
               configMap:
                 name: argocd-cmp-cm
+          
           extraContainers:
             - name: argocd-lovely-plugin-cmp
-              image: ghcr.io/crumbhole/argocd-lovely-plugin-cmp:v1.0 # Updated to valid tag
+              image: ghcr.io/crumbhole/argocd-lovely-plugin-cmp:1.2.2
               securityContext:
                 runAsNonRoot: true
                 runAsUser: 999
@@ -65,7 +64,7 @@ spec:
                   value: "20m"
                 - name: LOVELY_KUSTOMIZE_BUILD_OPTIONS
                   value: ""
-                - name: LOVELY_HELMFILE_TIMEOUT
+                - name: LOVELY_HELMFILE_TIMEOUT  
                   value: "20m"
 
         applicationSet:
@@ -77,6 +76,8 @@ spec:
         configs:
           params:
             server.insecure: true
+          
+          # Configure the CMP plugin
           cmp:
             create: true
             plugins:
@@ -92,7 +93,7 @@ spec:
                   discover:
                     find:
                       command: ["/bin/bash", "-c"]
-                      args:
+                      args: 
                         - |
                           if [[ -f "Chart.yaml" ]] || [[ -f "kustomization.yaml" ]] || [[ -f "helmfile.yaml" ]] || find . -name "*.yaml" -o -name "*.yml" | head -1 | grep -q .; then
                             exit 0
