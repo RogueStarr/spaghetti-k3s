@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: 8.2.0  # Use your actual working version here
+    targetRevision: 8.2.0
     helm:
       values: |
         redis-ha:
@@ -27,9 +27,18 @@ spec:
           nodeSelector:
             node-role.kubernetes.io/worker: ""
           tolerations: []
-          plugins:
-            argocd-lovely-plugin:
-              url: https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh
+          extraContainers:
+            - name: lovely-plugin
+              image: alpine:3.19
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  apk add --no-cache curl bash git;
+                  curl -fsSL https://raw.githubusercontent.com/akuity/argocd-lovely-plugin/main/assets/install.sh | bash -s /custom-tools;
+                  sleep infinity
+              volumeMounts:
+                - name: custom-tools
+                  mountPath: /custom-tools
 
         repoServer:
           autoscaling:
